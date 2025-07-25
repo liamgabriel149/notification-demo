@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>System Notification</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="background:#111; color:#fff; font-family:sans-serif; text-align:center; padding-top:50px;">
+  <h2>Click the button to trigger a system notification</h2>
+  <button onclick="showNotification()" style="padding:10px 20px; font-size:16px;">Notify Me</button>
+
+  <script>
+    function showNotification() {
+      if (!("Notification" in window)) {
+        alert("This browser does not support desktop notification");
+        return;
+      }
+
+      if (Notification.permission === "granted") {
+        triggerNotification();
+      } else if (Notification.permission !== "denied") {
+        Notification.requestPermission().then(permission => {
+          if (permission === "granted") {
+            triggerNotification();
+          } else {
+            alert("Notification permission denied.");
+          }
+        });
+      } else {
+        alert("Notifications are blocked. Enable them in your browser settings.");
+      }
+    }
+
+    function triggerNotification() {
+      new Notification("🔔 Notification", {
+        body: "This is a system-level notification!",
+        icon: "https://cdn-icons-png.flaticon.com/512/1827/1827392.png"
+      });
+    }
+  </script>
+</body>
+</html>
