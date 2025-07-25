@@ -1,40 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>System Notification</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body style="background:#111; color:#fff; font-family:sans-serif; text-align:center; padding-top:50px;">
-  <h2>Click the button to trigger a system notification</h2>
-  <button onclick="showNotification()" style="padding:10px 20px; font-size:16px;">Notify Me</button>
+  <h2>Click to Trigger System Notification</h2>
+  <p>This works on desktop and Android phones in Chrome</p>
+  <button onclick="showNotification()" style="padding:15px 30px; font-size:18px; border-radius:8px;">Notify Me</button>
 
   <script>
-    function showNotification() {
+    async function showNotification() {
       if (!("Notification" in window)) {
-        alert("This browser does not support desktop notification");
+        alert("Your browser does not support notifications.");
         return;
       }
 
-      if (Notification.permission === "granted") {
-        triggerNotification();
-      } else if (Notification.permission !== "denied") {
-        Notification.requestPermission().then(permission => {
-          if (permission === "granted") {
-            triggerNotification();
+      const permission = await Notification.requestPermission();
+      if (permission === "granted") {
+        navigator.serviceWorker.getRegistration().then(function (reg) {
+          if (reg) {
+            reg.showNotification("🔔 System Notification", {
+              body: "This is a notification that works on mobile & desktop!",
+              icon: "https://cdn-icons-png.flaticon.com/512/1827/1827392.png",
+              vibrate: [100, 50, 100],
+              tag: "demo-notification"
+            });
           } else {
-            alert("Notification permission denied.");
+            new Notification("🔔 System Notification", {
+              body: "This is a notification that works on mobile & desktop!",
+              icon: "https://cdn-icons-png.flaticon.com/512/1827/1827392.png"
+            });
           }
         });
       } else {
-        alert("Notifications are blocked. Enable them in your browser settings.");
+        alert("You denied notification permissions.");
       }
     }
 
-    function triggerNotification() {
-      new Notification("🔔 Notification", {
-        body: "This is a system-level notification!",
-        icon: "https://cdn-icons-png.flaticon.com/512/1827/1827392.png"
+    // Register a dummy service worker for mobile support
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register("sw.js").then(function () {
+        console.log("Service Worker registered.");
       });
     }
   </script>
